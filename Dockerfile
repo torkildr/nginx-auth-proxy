@@ -1,9 +1,9 @@
 FROM nginx:latest
 MAINTAINER torkildr
 
-COPY backend-auth.conf /etc/nginx/conf.d/backend-auth.template
+COPY nginx.template /etc/nginx/conf.d/default.template
 
 CMD \
-    /bin/bash -c "envsubst '\${AUTH_BACKEND}' < /etc/nginx/conf.d/backend-auth.template > /etc/nginx/conf.d/backend-auth.conf" \
+    /bin/bash -c "envsubst '\${AUTH_BACKEND}' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf" \
     && nginx -g "daemon off;"
 
