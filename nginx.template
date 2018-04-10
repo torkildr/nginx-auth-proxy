@@ -6,7 +6,11 @@ map $http_upgrade $connection_upgrade {
   ''      close;
 }
 
-# The PROXY;
+map $http_x_forwarded_proto $real_scheme {
+  default $http_x_forwarded_proto;
+  ''      $scheme;
+}
+
 server {
     # HTTP authentication backend;
     set $auth_backend "${AUTH_BACKEND}";
@@ -19,7 +23,7 @@ server {
         proxy_pass $auth_backend;
 
         proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $real_scheme;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
     
@@ -27,12 +31,14 @@ server {
     location /reproxy {
         set $reproxy_url $upstream_http_x_reproxy_url;
         set $reproxy_method $upstream_http_x_reproxy_method;
+        set $authenticated_user $upstream_http_x_authenticated_user;
 
         internal;
         proxy_pass $reproxy_url;
         proxy_method $reproxy_method;
 
         proxy_http_version 1.1;
+        proxy_set_header X-Authenticated-User $authenticated_user;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
     }
