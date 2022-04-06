@@ -16,6 +16,7 @@ server {
     set $auth_backend "${AUTH_BACKEND}";
     listen 80;
     server_name _;
+    client_max_body_size 1G;
 
     # Proxy all the request to the backend;
     location / {
